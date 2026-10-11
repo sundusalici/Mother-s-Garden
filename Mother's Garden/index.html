@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mother's Garden Boutique Hotel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --moss: #2f4a3a;
+    --sage: #a9bfa0;
+    --blush: #e8c4c4;
+    --chalk: #f7f8f4;
+    --ink: #1e2a23;
+    --serif: "Cormorant Garamond", Georgia, serif;
+    --sans: "DM Sans", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--chalk); color: var(--ink); line-height: 1.6; }
+  button { font: inherit; cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--blush); outline-offset: 3px; }
+
+  /* Home */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 2rem; color: var(--chalk);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(232,196,196,.35) 0, transparent 35%),
+      radial-gradient(circle at 85% 80%, rgba(169,191,160,.45) 0, transparent 40%),
+      var(--moss);
+  }
+  .hero h1 { font-family: var(--serif); font-weight: 600; font-size: clamp(2.8rem, 8vw, 5.5rem); line-height: 1.05; }
+  .hero p { max-width: 36ch; margin: 1.2rem auto 2.5rem; font-size: 1.1rem; color: #dfe8da; }
+  .nav-buttons { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    padding: .9rem 2rem; border-radius: 999px; border: 2px solid var(--blush);
+    background: var(--blush); color: var(--moss); font-weight: 500; font-size: 1rem;
+    transition: transform .15s, background .15s;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.ghost { background: transparent; color: var(--chalk); }
+  .btn.ghost:hover { background: rgba(247,248,244,.12); }
+
+  /* Animated garden on home page */
+  .hero { position: relative; overflow: hidden; }
+  .hero > :not(.garden) { position: relative; z-index: 2; }
+  .garden { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+  .flower { position: absolute; bottom: 0; width: 0; height: var(--h); transform-origin: bottom center; animation: sway 5s ease-in-out infinite alternate; animation-delay: var(--d); }
+  .stem { position: absolute; bottom: 0; left: -2px; width: 4px; height: 100%; border-radius: 2px; background: linear-gradient(#8fb08a, #5c8461); transform-origin: bottom; animation: grow 2.2s ease-out backwards; animation-delay: var(--d); }
+  .head { position: absolute; top: 0; left: 0; width: var(--s); height: var(--s); margin: calc(var(--s) / -2) 0 0 calc(var(--s) / -2); animation: bloom 1.6s cubic-bezier(.3,1.5,.5,1) backwards; animation-delay: calc(var(--d) + 1.8s); }
+  .head svg { width: 100%; height: 100%; animation: spin 24s linear infinite; }
+  .petal { position: absolute; top: -5vh; width: var(--p); height: var(--p); background: var(--blush); opacity: .7; border-radius: 50% 0 50% 50%; animation: fall var(--t) linear infinite; animation-delay: var(--d); }
+  @keyframes grow { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes bloom { from { transform: scale(0); } to { transform: scale(1); } }
+  @keyframes sway { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes fall {
+    0% { transform: translate(0, 0) rotate(0deg); }
+    50% { transform: translate(40px, 55vh) rotate(180deg); }
+    100% { transform: translate(-20px, 110vh) rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce) { .garden *, .flower { animation: none !important; } .petal { display: none; } }
+
+  /* Hanging flowers from the top */
+  .flower.hang { top: 0; bottom: auto; transform-origin: top center; }
+  .hang .stem { top: 0; bottom: auto; transform-origin: top; background: linear-gradient(#5c8461, #8fb08a); }
+  .hang .head { top: auto; bottom: 0; margin: 0 0 calc(var(--s) / -2) calc(var(--s) / -2); }
+
+  /* Amenities + About */
+  .amenity { cursor: default; }
+  .amenity:hover { transform: none; box-shadow: none; }
+  .about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2rem; align-items: start; }
+  .about-grid p { margin-bottom: 1rem; color: #3d4d43; }
+  .contact-card { background: #fff; border: 1px solid #dfe5da; border-radius: 6px; padding: 1.5rem; }
+  .contact-card h3 { font-family: var(--serif); font-size: 1.6rem; color: var(--moss); margin-bottom: .75rem; }
+  .contact-card dt { font-weight: 500; color: var(--moss); margin-top: .75rem; }
+  .contact-card dd { color: #4a5a50; }
+  .contact-card a { color: var(--moss); }
+  @media (max-width: 700px) { .about-grid { grid-template-columns: 1fr; } }
+
+  /* Photo gallery in room dialog + about photo */
+  .thumbs { display: flex; gap: .5rem; padding: .75rem 1.5rem 0; }
+  .thumb { width: 76px; height: 54px; padding: 0; overflow: hidden; border: 2px solid transparent; border-radius: 4px; background: #dfe5da; cursor: pointer; }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb[aria-current="true"] { border-color: var(--moss); }
+  .about-photo { display: block; width: 100%; max-height: 360px; object-fit: cover; border-radius: 6px; margin-bottom: 2rem; }
+
+  /* Pages */
+  .page { display: none; min-height: 100vh; padding: 2rem 1.25rem 4rem; }
+  .page.active { display: block; }
+  .page-inner { max-width: 960px; margin: 0 auto; }
+  .back { background: none; border: none; color: var(--moss); font-weight: 500; margin-bottom: 1.5rem; }
+  .back:hover { text-decoration: underline; }
+  .page h2 { font-family: var(--serif); font-size: clamp(2.2rem, 6vw, 3.4rem); color: var(--moss); line-height: 1.1; }
+  .lead { margin: .6rem 0 2.5rem; max-width: 52ch; color: #4a5a50; }
+
+  /* Rooms */
+  .rooms { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; }
+  .room { background: #fff; border-radius: 6px; overflow: hidden; border: 1px solid #dfe5da; display: flex; flex-direction: column; }
+  .room-art { height: 140px; display: grid; place-items: center; font-size: 3rem; }
+  .room:nth-child(1) .room-art { background: var(--sage); }
+  .room:nth-child(2) .room-art { background: var(--blush); }
+  .room:nth-child(3) .room-art { background: #c9d6c2; }
+  .room:nth-child(4) .room-art { background: #f1dcdc; }
+  .room-body { padding: 1.25rem; display: flex; flex-direction: column; gap: .5rem; flex: 1; }
+  .room h3 { font-family: var(--serif); font-size: 1.6rem; color: var(--moss); }
+  .room ul { list-style: none; font-size: .95rem; color: #4a5a50; }
+  .room li { padding: .15rem 0; }
+  .price { margin-top: auto; padding-top: .75rem; font-weight: 500; }
+  .price span { font-weight: 400; color: #6b7a70; font-size: .9rem; }
+
+  /* Menu */
+  .menu-tabs { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .tab { padding: .55rem 1.2rem; border-radius: 999px; border: 1.5px solid var(--moss); background: transparent; color: var(--moss); }
+  .tab[aria-selected="true"] { background: var(--moss); color: var(--chalk); }
+  .menu-list { display: none; max-width: 640px; }
+  .menu-list.active { display: block; }
+  .dish { padding: 1rem 0; border-bottom: 1px solid #dfe5da; }
+  .dish-top { display: flex; justify-content: space-between; gap: 1rem; font-weight: 500; }
+  .dish-top .name { font-family: var(--serif); font-size: 1.35rem; color: var(--moss); }
+  .dish p { font-size: .95rem; color: #5a6a60; }
+
+  /* Room cards as buttons */
+  .room { cursor: pointer; text-align: left; font: inherit; color: inherit; padding: 0; transition: box-shadow .15s, transform .15s; }
+  .room:hover { box-shadow: 0 6px 18px rgba(47,74,58,.15); transform: translateY(-2px); }
+  .room-art { position: relative; height: 180px; overflow: hidden; }
+  .room-art img, .dlg-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .more { color: var(--moss); font-weight: 500; font-size: .9rem; margin-top: .25rem; }
+
+  /* Room dialog */
+  dialog { border: none; border-radius: 8px; width: calc(100% - 2rem); max-width: 720px; max-height: 92vh; overflow: auto; margin: auto; padding: 0; background: var(--chalk); color: var(--ink); }
+  dialog::backdrop { background: rgba(30,42,35,.65); }
+  .dlg-art { position: relative; height: 260px; display: grid; place-items: center; font-size: 4rem; }
+  .close { position: absolute; top: .75rem; right: .75rem; z-index: 2; width: 2.4rem; height: 2.4rem; border-radius: 50%; border: none; background: var(--chalk); color: var(--moss); font-size: 1.4rem; line-height: 1; }
+  .dlg-body { padding: 1.5rem; }
+  .dlg-body h2 { font-family: var(--serif); font-size: 2.4rem; color: var(--moss); line-height: 1.1; }
+  .dlg-body .lead { margin: .5rem 0 1rem; }
+  .features { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .25rem 1rem; margin-bottom: 1rem; font-size: .95rem; }
+  .features li::before { content: "\2713  "; color: var(--moss); font-weight: 500; }
+  .book-title { font-family: var(--serif); font-size: 1.6rem; color: var(--moss); margin: 1.5rem 0 .75rem; padding-top: 1.25rem; border-top: 1px solid #dfe5da; }
+  form { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
+  form label { display: flex; flex-direction: column; gap: .25rem; font-size: .9rem; font-weight: 500; }
+  form .full { grid-column: 1 / -1; }
+  form input, form select, form textarea { font: inherit; padding: .6rem .7rem; border: 1px solid #b9c5b3; border-radius: 4px; background: #fff; }
+  form .btn { grid-column: 1 / -1; background: var(--moss); border-color: var(--moss); color: var(--chalk); }
+  #formMsg { color: #a33; margin-top: .75rem; min-height: 1.2em; }
+  #summary { margin-top: 1rem; padding: 1.25rem; border-radius: 6px; background: #e9f0e5; border: 1px solid var(--sage); }
+  #summary p { margin-bottom: .4rem; }
+  #summary .btn { display: inline-block; margin-top: .6rem; background: var(--moss); border-color: var(--moss); color: var(--chalk); text-decoration: none; }
+  @media (max-width: 520px) { form { grid-template-columns: 1fr; } }
+
+  footer { text-align: center; padding: 2rem 1rem; font-size: .9rem; color: #6b7a70; }
+
+  @media (prefers-reduced-motion: reduce) { .btn { transition: none; } }
+</style>
+</head>
+<body>
+
+<!-- HOME -->
+<section class="hero" id="home">
+  <div class="garden" id="garden" aria-hidden="true"></div>
+  <h1>Mother's Garden<br>Boutique Hotel</h1>
+  <p>Where every stay feels like a fairytale</p>
+  <div class="nav-buttons">
+    <button class="btn" data-go="rooms">View Rooms</button>
+    <button class="btn ghost" data-go="menu">Cafe Menu</button>
+    <button class="btn ghost" data-go="amenities">Hotel Amenities</button>
+    <button class="btn ghost" data-go="about">About &amp; Contact</button>
+  </div>
+</section>
+
+<!-- ROOMS -->
+<section class="page" id="rooms">
+  <div class="page-inner">
+    <button class="back" data-go="home">&larr; Back to home</button>
+    <h2>Our Rooms</h2>
+    <p class="lead">Three room categories, from our comfortable Stroots to the spacious Bousuite.</p>
+    <div class="rooms" id="roomGrid"></div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section class="page" id="menu">
+  <div class="page-inner">
+    <button class="back" data-go="home">&larr; Back to home</button>
+    <h2>Cafe Menu</h2>
+    <p class="lead">Coffee, tea and homemade treats, served in the garden or by the window.</p>
+
+    <div class="menu-tabs" role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-menu="coffee">Coffee &amp; Tea</button>
+      <button class="tab" role="tab" aria-selected="false" data-menu="light">Light Bites</button>
+      <button class="tab" role="tab" aria-selected="false" data-menu="pastry">Pastries &amp; Desserts</button>
+      <button class="tab" role="tab" aria-selected="false" data-menu="cold">Cold Drinks</button>
+    </div>
+
+    <div class="menu-list active" id="coffee">
+      <div class="dish"><div class="dish-top"><span class="name">Espresso</span><span>$3</span></div><p>Rich and short, made from freshly ground beans.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Latte / Cappuccino</span><span>$4</span></div><p>Espresso with steamed milk, plain or with a little cinnamon.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Garden Herbal Tea</span><span>$4</span></div><p>Chamomile, sage, linden or rose petal from our garden.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Rose Latte</span><span>$5</span></div><p>Milk, espresso and a touch of rose syrup.</p></div>
+    </div>
+
+    <div class="menu-list" id="light">
+      <div class="dish"><div class="dish-top"><span class="name">Garden Toast</span><span>$8</span></div><p>Sourdough, white cheese, tomato, cucumber and fresh herbs.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Herb Omelette</span><span>$9</span></div><p>Three eggs with chives, parsley and dill, served with toast.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Honey &amp; Yogurt Bowl</span><span>$7</span></div><p>Thick yogurt, local honey, walnuts and seasonal fruit.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Avocado Sandwich</span><span>$9</span></div><p>Avocado, soft egg, rocket and lemon on seeded bread.</p></div>
+    </div>
+
+    <div class="menu-list" id="pastry">
+      <div class="dish"><div class="dish-top"><span class="name">Butter Croissant</span><span>$4</span></div><p>Baked every morning, served warm.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Rose Panna Cotta</span><span>$7</span></div><p>Silky vanilla cream with rose syrup and pistachios.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Lemon Garden Tart</span><span>$7</span></div><p>Buttery crust, lemon curd and fresh mint.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Warm Apple Crumble</span><span>$7</span></div><p>Baked apples with cinnamon and vanilla ice cream.</p></div>
+    </div>
+
+    <div class="menu-list" id="cold">
+      <div class="dish"><div class="dish-top"><span class="name">Fresh Mint Lemonade</span><span>$5</span></div><p>Squeezed to order with mint from the garden.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Iced Latte</span><span>$5</span></div><p>Espresso over ice with cold milk.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Fresh Orange Juice</span><span>$5</span></div><p>Pressed when you order.</p></div>
+      <div class="dish"><div class="dish-top"><span class="name">Sparkling Water</span><span>$3</span></div><p>With lemon or cucumber slices.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- AMENITIES -->
+<section class="page" id="amenities">
+  <div class="page-inner">
+    <button class="back" data-go="home">&larr; Back to home</button>
+    <h2>Hotel Amenities</h2>
+    <p class="lead">Places to slow down, whether you stay a night or a week.</p>
+    <div class="rooms">
+      <article class="room amenity">
+        <div class="room-art" style="background:#a9bfa0"><span aria-hidden="true" style="font-size:3rem">🛋️</span><img data-photo="lounge area" alt="Lounge area" onerror="this.remove()"></div>
+        <div class="room-body">
+          <h3>Lounge Area</h3>
+          <ul><li>Comfortable seating and a reading corner</li><li>Open to all guests, 24 hours</li><li>Free tea and water</li></ul>
+        </div>
+      </article>
+      <article class="room amenity">
+        <div class="room-art" style="background:#e8c4c4"><span aria-hidden="true" style="font-size:3rem">💆</span><img data-photo="massage room" alt="Massage room" onerror="this.remove()"></div>
+        <div class="room-body">
+          <h3>Massage Room</h3>
+          <ul><li>Relaxing massages with natural oils</li><li>By appointment, 10:00 – 20:00</li><li>Book at the reception</li></ul>
+        </div>
+      </article>
+      <article class="room amenity">
+        <div class="room-art" style="background:#c9d6c2"><span aria-hidden="true" style="font-size:3rem">☕</span><img data-photo="cafe" alt="Cafe" onerror="this.remove()"></div>
+        <div class="room-body">
+          <h3>Cafe</h3>
+          <ul><li>Coffee, herbal teas and fresh pastries</li><li>Open daily, 07:00 – 22:00</li><li>Garden seating in summer</li></ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="page" id="about">
+  <div class="page-inner">
+    <button class="back" data-go="home">&larr; Back to home</button>
+    <h2>About Us</h2>
+    <p class="lead">A small family-run hotel built around a garden.</p>
+    <img class="about-photo" data-photo="reseption" alt="Hotel reception" onerror="this.remove()">
+    <div class="about-grid">
+      <div>
+        <p>Mother's Garden Boutique Hotel began as a family home with a large garden full of roses, herbs and fruit trees. Today it welcomes guests who want a quiet, personal stay away from the crowds.</p>
+        <p>Many of the herbs and vegetables you will taste in our cafe are grown just outside the door. Our team is happy to help with local tips, transfers and special occasions.</p>
+      </div>
+      <aside class="contact-card">
+        <h3>Contact</h3>
+        <dl>
+          <!-- Replace the details below with your real information -->
+          <dt>Address</dt><dd>123 Garden Street, Your City, Your Country</dd>
+          <dt>Phone</dt><dd><a href="tel:+900000000000">+90 000 000 00 00</a></dd>
+          <dt>Email</dt><dd><a href="mailto:reservations@your-hotel-email.com">reservations@your-hotel-email.com</a></dd>
+          <dt>Reception</dt><dd>Open 24 hours</dd>
+          <dt>Check-in / Check-out</dt><dd>from 14:00 / until 12:00</dd>
+        </dl>
+        <p style="margin-top:1rem"><a href="https://www.google.com/maps/search/?api=1&query=Mother%27s+Garden+Boutique+Hotel" target="_blank" rel="noopener">Open in Google Maps</a></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<dialog id="roomDialog" aria-labelledby="dlgTitle">
+  <button class="close" id="dlgClose" aria-label="Close">&times;</button>
+  <div class="dlg-art" id="dlgArt"></div>
+  <div class="thumbs" id="dlgThumbs"></div>
+  <div class="dlg-body">
+    <h2 id="dlgTitle"></h2>
+    <p class="lead" id="dlgDesc"></p>
+    <ul class="features" id="dlgFeatures"></ul>
+    <p class="price" id="dlgPrice"></p>
+    <h3 class="book-title">Reserve this room</h3>
+    <form id="bookForm" novalidate>
+      <label>Check-in<input type="date" name="checkin" required></label>
+      <label>Check-out<input type="date" name="checkout" required></label>
+      <label>Guests<select name="guests" id="guestSelect"></select></label>
+      <label>Full name<input type="text" name="name" required autocomplete="name"></label>
+      <label>Email<input type="email" name="email" required autocomplete="email"></label>
+      <label>Phone<input type="tel" name="phone" autocomplete="tel"></label>
+      <label class="full">Special requests<textarea name="notes" rows="2"></textarea></label>
+      <button class="btn" type="submit">Request reservation</button>
+    </form>
+    <p id="formMsg" role="alert"></p>
+    <div id="summary" hidden></div>
+  </div>
+</dialog>
+
+<footer>&copy; 2026 Mother's Garden Boutique Hotel</footer>
+
+<script>
+  // Switch between home, rooms and menu
+  const views = ["home", "rooms", "menu", "amenities", "about"];
+  function show(id) {
+    views.forEach(v => {
+      const el = document.getElementById(v);
+      if (v === "home") el.style.display = id === "home" ? "flex" : "none";
+      else el.classList.toggle("active", v === id);
+    });
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("[data-go]").forEach(b =>
+    b.addEventListener("click", () => show(b.dataset.go)));
+
+  // Menu tabs
+  document.querySelectorAll(".tab").forEach(tab => {
+    tab.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t === tab));
+      document.querySelectorAll(".menu-list").forEach(l =>
+        l.classList.toggle("active", l.id === tab.dataset.menu));
+    });
+  });
+
+  // ---- Rooms data: edit names, prices and photo file names here ----
+  const IMG_EXT = ".jpeg"; // file extension of your photos (do not repeat it inside photo("..."))
+  const photo = name => `images/${encodeURI(name)}${IMG_EXT}`;
+  const HOTEL_EMAIL = "reservations@your-hotel-email.com"; // change to your real email
+  const rooms = [
+    // Placeholder prices, sizes and features: replace with your real details
+    { id: "stroots", name: "Stroots", emoji: "🌿", color: "#a9bfa0", img: photo("stroots"), count: 10, price: 100, size: "22 m²", bed: "Double or twin beds", guests: 2,
+      desc: "Our standard room: simple, quiet and comfortable, with everything you need for a relaxing stay.",
+      features: ["Double or twin beds", "22 m²", "Free Wi-Fi", "Air conditioning", "Private bathroom with shower", "Work desk", "10 rooms in this category"] },
+    { id: "stemlux", name: "Stemlux", emoji: "🌹", color: "#e8c4c4", img: photo("stemlux"), extra: [photo("stemlux2")], count: 6, price: 150, size: "30 m²", bed: "Queen bed", guests: 3,
+      desc: "Our deluxe room, with more space, a sitting area and extra comfort for longer stays.",
+      features: ["Queen bed", "30 m²", "Sitting area", "Free Wi-Fi", "Air conditioning", "Minibar", "Private bathroom with shower", "6 rooms in this category"] },
+    { id: "bousuite", name: "Bousuite", emoji: "🏡", color: "#f1dcdc", img: photo("bousuite"), extra: [photo("bousuite2"), photo("bousuite3")], count: 2, price: 250, size: "50 m²", bed: "King bed", guests: 4,
+      desc: "Our suite: a spacious bedroom with a separate living area, perfect for special occasions or families.",
+      features: ["King bed", "50 m²", "Separate living area", "Free Wi-Fi", "Air conditioning", "Minibar", "Bathtub", "Only 2 suites available"] }
+  ];
+
+  // Render room cards (if a photo file is missing, the colored block stays)
+  const grid = document.getElementById("roomGrid");
+  grid.innerHTML = rooms.map(r => `
+    <button class="room" data-id="${r.id}">
+      <div class="room-art" style="background:${r.color}"><span aria-hidden="true" style="font-size:3rem">${r.emoji}</span><img src="${r.img}" alt="${r.name}" onerror="this.remove()"></div>
+      <div class="room-body">
+        <h3>${r.name}</h3>
+        <ul><li>${r.bed} &middot; ${r.size}</li><li>Up to ${r.guests} guests</li><li>${r.count} room${r.count > 1 ? "s" : ""} available</li></ul>
+        <p class="price">$${r.price} <span>per night</span></p>
+        <span class="more">View details and book</span>
+      </div>
+    </button>`).join("");
+
+  // Room dialog + reservation
+  const dlg = document.getElementById("roomDialog");
+  const form = document.getElementById("bookForm");
+  const msg = document.getElementById("formMsg");
+  const summary = document.getElementById("summary");
+  let current = null;
+
+  function showPhoto(i) {
+    const photos = [current.img, ...(current.extra || [])];
+    document.getElementById("dlgArt").innerHTML = `<span aria-hidden="true">${current.emoji}</span><img src="${photos[i]}" alt="${current.name}" onerror="this.remove()">`;
+    document.getElementById("dlgThumbs").innerHTML = photos.length > 1
+      ? photos.map((ph, k) => `<button type="button" class="thumb" data-i="${k}" aria-label="Photo ${k + 1}" aria-current="${k === i}"><img src="${ph}" alt="" onerror="this.parentElement.remove()"></button>`).join("")
+      : "";
+  }
+  document.getElementById("dlgThumbs").addEventListener("click", e => {
+    const b = e.target.closest(".thumb");
+    if (b) showPhoto(+b.dataset.i);
+  });
+
+  grid.addEventListener("click", e => {
+    const card = e.target.closest(".room");
+    if (!card) return;
+    current = rooms.find(r => r.id === card.dataset.id);
+    const art = document.getElementById("dlgArt");
+    art.style.background = current.color;
+    showPhoto(0);
+    document.getElementById("dlgTitle").textContent = current.name;
+    document.getElementById("dlgDesc").textContent = current.desc;
+    document.getElementById("dlgFeatures").innerHTML = current.features.map(f => `<li>${f}</li>`).join("");
+    document.getElementById("dlgPrice").innerHTML = `$${current.price} <span>per night</span>`;
+    document.getElementById("guestSelect").innerHTML =
+      Array.from({ length: current.guests }, (_, i) => `<option value="${i + 1}">${i + 1} guest${i ? "s" : ""}</option>`).join("");
+    form.reset();
+    msg.textContent = "";
+    summary.hidden = true;
+    const today = new Date().toISOString().split("T")[0];
+    form.checkin.min = today;
+    form.checkout.min = today;
+    dlg.showModal();
+  });
+
+  document.getElementById("dlgClose").addEventListener("click", () => dlg.close());
+  dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    summary.hidden = true;
+    const f = new FormData(form);
+    const nights = Math.round((new Date(f.get("checkout")) - new Date(f.get("checkin"))) / 864e5);
+    if (!f.get("checkin") || !f.get("checkout") || !(nights > 0)) { msg.textContent = "Please choose a check-out date after your check-in date."; return; }
+    if (!f.get("name").trim()) { msg.textContent = "Please enter your full name."; return; }
+    if (!/^\S+@\S+\.\S+$/.test(f.get("email"))) { msg.textContent = "Please enter a valid email address."; return; }
+    msg.textContent = "";
+
+    const total = nights * current.price;
+    const text = [
+      `Room: ${current.name}`,
+      `Dates: ${f.get("checkin")} to ${f.get("checkout")} (${nights} night${nights > 1 ? "s" : ""})`,
+      `Guests: ${f.get("guests")}`,
+      `Total: $${total}`,
+      `Name: ${f.get("name")}`,
+      `Email: ${f.get("email")}`,
+      `Phone: ${f.get("phone") || "-"}`,
+      `Requests: ${f.get("notes") || "-"}`
+    ].join("\n");
+
+    summary.innerHTML = "";
+    const title = document.createElement("p");
+    title.innerHTML = "<strong>Your reservation request</strong>";
+    const body = document.createElement("p");
+    body.style.whiteSpace = "pre-line";
+    body.textContent = text;
+    const link = document.createElement("a");
+    link.className = "btn";
+    link.textContent = "Send request by email";
+    link.href = `mailto:${HOTEL_EMAIL}?subject=${encodeURIComponent("Reservation request: " + current.name)}&body=${encodeURIComponent(text)}`;
+    summary.append(title, body, link);
+    summary.hidden = false;
+    summary.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  });
+
+  // Amenities and reception photos
+  document.querySelectorAll("img[data-photo]").forEach(i => { i.src = photo(i.dataset.photo); });
+
+  // ---- Animated flowers and falling petals on the home page ----
+  (function () {
+    const garden = document.getElementById("garden");
+    const colors = ["#e8c4c4", "#f3d9d9", "#f7f8f4", "#d98fa0", "#f0b5c0"];
+    function flower(c) {
+      let petals = "";
+      for (let i = 0; i < 6; i++) petals += `<ellipse cx="30" cy="16" rx="8" ry="15" fill="${c}" transform="rotate(${i * 60} 30 30)"/>`;
+      return `<svg viewBox="0 0 60 60">${petals}<circle cx="30" cy="30" r="7" fill="#f2c94c"/></svg>`;
+    }
+    const count = 11;
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement("div");
+      el.className = "flower";
+      const left = (i + 0.5) * (100 / count) + (Math.random() * 4 - 2);
+      const h = 10 + Math.random() * 16;             // stem height in vh
+      const size = 44 + Math.random() * 28;           // flower size in px
+      el.style.cssText = `left:${left}%;--h:${h}vh;--s:${size}px;--d:${(Math.random() * 1.5).toFixed(2)}s`;
+      el.innerHTML = `<div class="stem"></div><div class="head">${flower(colors[i % colors.length])}</div>`;
+      garden.appendChild(el);
+    }
+    for (let i = 0; i < 8; i++) {
+      const el = document.createElement("div");
+      el.className = "flower hang";
+      const left = (i + 0.5) * (100 / 8) + (Math.random() * 4 - 2);
+      el.style.cssText = `left:${left}%;--h:${7 + Math.random() * 11}vh;--s:${38 + Math.random() * 26}px;--d:${(Math.random() * 1.5).toFixed(2)}s`;
+      el.innerHTML = `<div class="stem"></div><div class="head">${flower(colors[(i + 2) % colors.length])}</div>`;
+      garden.appendChild(el);
+    }
+    for (let i = 0; i < 14; i++) {
+      const pt = document.createElement("div");
+      pt.className = "petal";
+      pt.style.cssText = `left:${Math.random() * 100}%;--p:${8 + Math.random() * 8}px;--t:${9 + Math.random() * 8}s;--d:-${(Math.random() * 12).toFixed(1)}s`;
+      garden.appendChild(pt);
+    }
+  })();
+</script>
+</body>
+</html>
